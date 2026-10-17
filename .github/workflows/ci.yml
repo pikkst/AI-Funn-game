@@ -1,0 +1,80 @@
+name: CI / quality gates
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "checkpoints/**"
+      - "runs/**"
+      - "*.pt"
+      - "*.pth"
+      - "*.zip"
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: lint
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e './python[dev,test]'
+
+      - name: Run ruff check
+        run: python -m ruff check ./python/src ./python/tests
+
+      - name: Run ruff format check
+        run: python -m ruff format --check ./python/src ./python/tests
+
+  test:
+    name: test
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e './python[test]'
+
+      - name: Run pytest
+        run: python -m pytest ./python/tests
+
+  type-check:
+    name: type-check
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e './python[dev]'
+
+      - name: Run mypy
+        run: python -m mypy ./python/src

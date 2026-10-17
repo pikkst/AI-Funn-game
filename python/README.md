@@ -33,3 +33,25 @@ python -m pytest ./python/tests
 
 A passing run confirms that the package imports, the declared
 subpackages are importable, and the Python version floor is met.
+## Quality gates
+
+Run the following from the repository root in PowerShell:
+
+`powershell
+# Install lint, test and type-check dependencies
+python -m pip install -e './python[dev,test]'
+
+# Lint
+python -m ruff check ./python/src ./python/tests
+
+# Format check
+python -m ruff format --check ./python/src ./python/tests
+
+# Tests
+python -m pytest ./python/tests
+
+# Type check
+python -m mypy ./python/src
+`
+
+CI runs the same gates on Windows via .github/workflows/ci.yml (lint, test, type-check) on push to main and pull requests. Training artifacts (checkpoints/, uns/, *.pt, *.pth, *.zip) are excluded from CI and are not uploaded as artifacts.

@@ -31,3 +31,9 @@ runs/
 Thumbs.db
 .DS_Store
 desktop.ini
+
+# Build artifacts
+*.egg-info/
+*.egg-link
+build/
+dist/
