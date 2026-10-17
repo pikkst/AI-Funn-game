@@ -64,3 +64,7 @@ No multi-agent civilization, language emergence, genetic reproduction, autonomou
 ## Safety and resource controls
 
 Local-only by default; no secrets in repo or logs. Bound training duration, disk usage, episode length, and checkpoint retention. Store configuration and code revision with each experiment; never commit model weights or large run data.
+
+## Kilo Code development agents
+
+Development is intended to be coordinated through **Kilo Code**, with root [AGENTS.md](AGENTS.md) as canonical project instructions and dedicated [Kilo agent definitions](.kilo/agents/) for orchestration, simulation, training, evaluation, QA and future visualization. Read [Kilo Code workflow](docs/KILO_CODE.md) before using subagents. These are coding assistants, not the RL organisms trained inside the game.
