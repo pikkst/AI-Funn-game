@@ -1,6 +1,16 @@
-"""Simulation core for AI-Funn-game.
+from __future__ import annotations
 
-This subpackage will host the deterministic, CPU-only world model that
-agents interact with.  It must not import ML, UI, API or storage
-modules.  Currently a stub; full implementation pending.
-"""
+from .rng import WorldRNG
+from .terrain import Terrain, is_navigable, is_passable
+from .world import WorldState, generate_world, step, validate_world_state
+
+__all__ = [
+    "Terrain",
+    "WorldRNG",
+    "WorldState",
+    "generate_world",
+    "is_navigable",
+    "is_passable",
+    "step",
+    "validate_world_state",
+]
