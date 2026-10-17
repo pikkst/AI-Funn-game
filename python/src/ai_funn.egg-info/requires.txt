@@ -1,0 +1,13 @@
+numpy==1.26.4
+
+[dev]
+ruff==0.16.1
+mypy==1.11.0
+
+[ml]
+torch==2.5.1+cpu
+gymnasium==0.29.1
+stable-baselines3==2.5.0
+
+[test]
+pytest==9.1.1
