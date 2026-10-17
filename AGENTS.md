@@ -57,3 +57,18 @@ When documents conflict, report and reconcile the conflict before implementing. 
 ## Definition of Done
 
 Task AC met; tests and appropriate gates actually passed; reproducible artifacts recorded; docs updated; no unauthorized writes/merge/deploy; known limitations reported. If unknown or blocked, state precisely what remains and do not mark done.
+
+## Kilo Code integration (project-specific)
+
+The project is built with **Kilo Code**. Kilo loads this root `AGENTS.md` automatically, while custom agents are defined in `.kilo/agents/*.md` using YAML frontmatter. This is the preferred current format; do not introduce legacy `.kilocodemodes`, a separate `.agents/` framework, or another competing task tracker. See [docs/KILO_CODE.md](docs/KILO_CODE.md).
+
+- `orchestrator` (primary): plans and delegates scoped work without direct file edits.
+- `simulation-engineer` (subagent): simulation and Gymnasium environment.
+- `rl-engineer` (subagent): PyTorch/SB3 training and checkpointing.
+- `research-evaluator` (subagent, read-only): experimental validity and reward issues.
+- `qa-reviewer` (subagent, read-only): diff review, invariants and evidence.
+- `observatory-designer` (subagent, read-only): UI design only in later stages.
+
+Kilo subagents are **software-development assistants**, never the in-world RL organisms. Route each change to a single owning specialist. Never assume prompt-defined restrictions alone are a substitute for repo protection and human review; inspect actual permissions in your installed Kilo version. Kilo and models must not mark TASKS.md done based on delegated claims alone.
+
+Kilo-specific workflow: select `orchestrator` in the agent picker, point it at the next unchecked task in `TASKS.md`, request bounded delegation and evidence-based QA. Only use implementation agents when the user requests code changes. Do not broaden the first milestone to multiplayer or graphical UI.
