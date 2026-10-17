@@ -8,7 +8,7 @@ Task IDs are stable within this document. Check an item only when code, tests an
 
 - [x] **DL-001 ā€” Project bootstrap**: add Python package scaffold (`python/pyproject.toml`), lock/pin dependencies, source/test layout and scripts. **AC:** fresh Windows installation can run import + pytest smoke.
 - [x] **DL-002 ā€” Quality controls**: Ruff, pytest, type checks where practical, workflow CI, gitignore and documentation links. **AC:** CI executes meaningful validation and excludes large training/checkpoints.
-- [ ] **DL-003 ā€” Versioned experiment configuration**: typed config, `environment_version`, action/observation versions and seed splits. **AC:** invalid configurations fail before training; manifest serializes exact settings.
+- [x] **DL-003 — Versioned experiment configuration**: typed config, `environment_version`, action/observation versions and seed splits. **AC:** invalid configurations fail before training; manifest serializes exact settings.
 
 ## Milestone M1 ā€” First learning organism (priority)
 
