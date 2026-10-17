@@ -14,7 +14,7 @@ Task IDs are stable within this document. Check an item only when code, tests an
 
 - [x] **DL-010 ā€” Deterministic world core**: seeded 32Ć—32 world, navigability, resources, regrowth, bounded map generation. **AC:** same seed/config/actions produce identical CPU trace; impossible spawn layouts are rejected.
 - [x] **DL-011 ā€” Organism lifecycle**: energy, hunger, health, eat/rest/move, death and time-limit mechanics. **AC:** idle/rest cannot survive indefinitely without food; movement and resource invariants tested.
-- [ ] **DL-012 ā€” Survival-v1 Gymnasium adapter**: `Discrete(6)`, `float32[199]`, reset/step contract, info, terminal/truncation. **AC:** Gymnasium `check_env` and invalid-action tests pass.
+- [x] **DL-012 ā€” Survival-v1 Gymnasium adapter**: `Discrete(6)`, `float32[199]`, reset/step contract, info, terminal/truncation. **AC:** Gymnasium `check_env` and invalid-action tests pass.
 - [ ] **DL-013 ā€” Baseline policies**: random, always-rest, eat-on-food and simple walker. **AC:** at least 100 seeded eval episodes with reproducible output and death-cause breakdown.
 - [ ] **DL-014 ā€” PPO training CLI**: SB3 MlpPolicy 2Ć—128, 8 vector environments, short smoke then configurable 500k-step run, bounded artifacts. **AC:** fresh run trains, saves, loads, and logs metrics; CPU works.
 - [ ] **DL-015 ā€” Evaluation and scientific integrity**: disjoint world seeds, frozen-policy eval, confidence intervals, per-seed results. **AC:** final protocol shows >=2Ć— random survival or records an explicit unmet acceptance target without reinterpreting data.
