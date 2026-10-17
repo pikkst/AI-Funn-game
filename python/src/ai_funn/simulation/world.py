@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -17,6 +18,15 @@ from .spawn import find_valid_spawn, viable_surroundings
 from .terrain import Terrain, is_passable
 
 MAX_GENERATION_ATTEMPTS = 100
+
+METABOLISM_COST_PER_STEP = 0.5
+MOVEMENT_EXTRA_COST = 0.5
+HUNGER_INCREMENT_PER_STEP = 0.1
+REST_ENERGY_RECOVERY = 2.0
+STARVATION_HEALTH_DECLINE = 1.0
+ENERGY_MAX = 100.0
+HEALTH_MAX = 100.0
+HUNGER_MAX = 1.0
 
 
 @dataclass(frozen=True)
@@ -52,6 +62,27 @@ class WorldState:
             "rng_state": _serialize_rng_state(self.rng_state),
         }
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> WorldState:
+        if not isinstance(data, dict):
+            raise ConfigurationError("world state must be dict", field_path=None)
+        rng_state = _deserialize_rng_state(data["rng_state"])
+        return cls(
+            width=int(data["width"]),
+            height=int(data["height"]),
+            max_steps=int(data["max_steps"]),
+            terrain=tuple(tuple(int(v) for v in row) for row in data["terrain"]),
+            food=tuple(tuple(float(v) for v in row) for row in data["food"]),
+            organism_x=int(data["organism_x"]),
+            organism_y=int(data["organism_y"]),
+            energy=float(data["energy"]),
+            health=float(data["health"]),
+            hunger=float(data["hunger"]),
+            step=int(data["step"]),
+            events=tuple(str(v) for v in data["events"]),
+            rng_state=rng_state,
+        )
+
     @property
     def rng(self) -> WorldRNG:
         return WorldRNG.from_state(self.rng_state)
@@ -67,30 +98,6 @@ def _deserialize_rng_state(data: Any) -> Any:
     if isinstance(data, dict):
         return (data["version"], tuple(data["state"]), data["gauss_next"])
     return data
-
-
-def world_state_from_dict(data: dict[str, Any]) -> WorldState:
-    if not isinstance(data, dict):
-        raise ConfigurationError("world state must be dict", field_path=None)
-    rng_state = _deserialize_rng_state(data["rng_state"])
-    return WorldState(
-        width=int(data["width"]),
-        height=int(data["height"]),
-        max_steps=int(data["max_steps"]),
-        terrain=tuple(tuple(int(v) for v in row) for row in data["terrain"]),
-        food=tuple(tuple(float(v) for v in row) for row in data["food"]),
-        organism_x=int(data["organism_x"]),
-        organism_y=int(data["organism_y"]),
-        energy=float(data["energy"]),
-        health=float(data["health"]),
-        hunger=float(data["hunger"]),
-        step=int(data["step"]),
-        events=tuple(str(v) for v in data["events"]),
-        rng_state=rng_state,
-    )
-
-
-WorldState.from_dict = staticmethod(world_state_from_dict)  # type: ignore[attr-defined]
 
 
 def validate_world_state(state: WorldState) -> None:
@@ -110,11 +117,15 @@ def validate_world_state(state: WorldState) -> None:
         [list(r) for r in state.terrain], state.organism_x, state.organism_y
     ):
         raise ConfigurationError("organism lacks viable surroundings", field_path="organism")
+
     for row in state.food:
         for v in row:
-            if v < 0 or v != v:  # nan check
+            if v < 0 or v != v or math.isinf(v):
                 raise ConfigurationError("food resource invalid", field_path="food")
-    if state.energy < 0 or state.health < 0 or state.hunger < 0:
+    for val in (state.energy, state.health, state.hunger):
+        if val != val or math.isinf(val) or val < 0:
+            raise ConfigurationError("organism stats invalid", field_path="organism")
+    if state.hunger > HUNGER_MAX or state.energy > ENERGY_MAX or state.health > HEALTH_MAX:
         raise ConfigurationError("organism stats invalid", field_path="organism")
     if state.step > state.max_steps:
         raise ConfigurationError("step exceeds max", field_path="step")
@@ -188,12 +199,8 @@ def init_food_grid_from_terrain(terrain: list[list[int]]) -> list[list[float]]:
     return init_food_grid(terrain, 1.0)
 
 
-# attach to_dict/from_dict already defined
-WorldState.to_dict = WorldState.to_dict  # type: ignore
-
-
 def step(state: WorldState, action: int) -> tuple[WorldState, float, bool, bool, dict[str, Any]]:
-    if state.step >= state.max_steps:
+    if state.step >= state.max_steps or state.health <= 0.0:
         raise ConfigurationError("terminal state cannot be stepped", field_path="step")
     terrain = [list(r) for r in state.terrain]
     food = [list(r) for r in state.food]
@@ -237,17 +244,53 @@ def step(state: WorldState, action: int) -> tuple[WorldState, float, bool, bool,
     else:
         raise ConfigurationError("invalid action", field_path="action")
 
-    # 3 metabolic cost/hunger/env effects: none beyond storing
+    # 3 metabolic cost/hunger/env effects
+    moved = action in (0, 1, 2, 3)
+    is_eat = action == 4
+    is_rest = action == 5
+
+    energy = state.energy
+    health = state.health
+    hunger = state.hunger
+
+    cost = METABOLISM_COST_PER_STEP
+    if moved:
+        cost += MOVEMENT_EXTRA_COST
+    energy -= cost
+
+    hunger = min(HUNGER_MAX, hunger + HUNGER_INCREMENT_PER_STEP)
+
+    if is_eat:
+        ate_amount = 0.0
+        for ev in events:
+            if ev.startswith("ate:"):
+                ate_amount = float(ev.split(":", 1)[1])
+        energy = min(ENERGY_MAX, energy + ate_amount)
+
+    if is_rest:
+        energy = min(ENERGY_MAX, energy + REST_ENERGY_RECOVERY * (1.0 - hunger))
+
+    events.append("metabolism")
+    events.append("hunger")
+
+    if energy <= 0.0:
+        energy = 0.0
+        health = max(0.0, health - STARVATION_HEALTH_DECLINE)
+        events.append("starving")
+    if health <= 0.0:
+        health = 0.0
+        if "died" not in events:
+            events.append("died")
+
+    if is_rest and "rest" not in events:
+        events.append("rest")
+
     # 4 regrowth/random events
     regrow_resources(terrain, food, rng)
     # 5 death/truncation
     new_step = state.step + 1
-    energy = state.energy
-    health = state.health
-    hunger = state.hunger
     terminated = health <= 0.0
     truncated = (not terminated) and new_step >= state.max_steps
-    # death on final step precedence
     if new_step >= state.max_steps and health <= 0.0:
         terminated = True
         truncated = False
