@@ -54,3 +54,9 @@ For every task: preserve existing contracts; provide tests, docs, deterministic 
 - Training device (CPU vs CUDA): benchmark after first working env; do not hardcode GPU assumption.
 - Hyperparameters and reward tuning: log explicit experimental variants and never tune on untouched final test seeds.
 - M1 API/UI: intentionally deferred; avoid premature service architecture.
+
+## Kilo Code task delegation (documentation only)
+
+Use the project-level Kilo agents in `.kilo/agents/`. For DL-001–DL-003 the orchestrator coordinates scaffolding and quality gates within the existing task scope; a coding agent may implement the scaffold, but do not treat narrow specialist edit permissions as permission to bypass the user. DL-010–DL-012 belong to simulation-engineer; DL-014 to rl-engineer; DL-013, DL-015 and DL-017 require research-evaluator plus qa-reviewer. DL-016 should be owned by the implementer of replay with QA verification. M5 observatory work is deferred.
+
+Subagent completion is not task completion: require the actual diff, tests, reproducibility metadata, relevant acceptance evidence and user-approved integration. See [docs/KILO_CODE.md](docs/KILO_CODE.md). No tasks are marked complete by the documentation integration.
