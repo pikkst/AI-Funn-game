@@ -1,5 +1,41 @@
-"""Experiment orchestration for AI-Funn-game.
+"""Experiment orchestration for AI-Funn-game."""
 
-This subpackage will host the experiment runner, metric collection and
-artifact management.  Currently a stub; full implementation pending.
-"""
+from .config import (
+    ACTION_VERSION,
+    CANONICAL_ACTION_COUNT,
+    CANONICAL_MAX_EPISODE_STEPS,
+    CANONICAL_OBSERVATION_DIM,
+    CANONICAL_WORLD_HEIGHT,
+    CANONICAL_WORLD_WIDTH,
+    ENVIRONMENT_VERSION,
+    OBSERVATION_VERSION,
+    ActionConfig,
+    ConfigurationError,
+    EnvironmentConfig,
+    ExperimentConfig,
+    ExperimentManifest,
+    ObservationConfig,
+    SeedSplit,
+    TrainingConfig,
+    create_manifest,
+)
+
+__all__ = [
+    "ACTION_VERSION",
+    "CANONICAL_ACTION_COUNT",
+    "CANONICAL_MAX_EPISODE_STEPS",
+    "CANONICAL_OBSERVATION_DIM",
+    "CANONICAL_WORLD_HEIGHT",
+    "CANONICAL_WORLD_WIDTH",
+    "ENVIRONMENT_VERSION",
+    "OBSERVATION_VERSION",
+    "ActionConfig",
+    "ConfigurationError",
+    "EnvironmentConfig",
+    "ExperimentConfig",
+    "ExperimentManifest",
+    "ObservationConfig",
+    "SeedSplit",
+    "TrainingConfig",
+    "create_manifest",
+]
