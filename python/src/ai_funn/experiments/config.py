@@ -18,7 +18,7 @@ class ConfigurationError(ValueError):
         super().__init__(message)
 
 
-ENVIRONMENT_VERSION: str = "survival-v1"
+ENVIRONMENT_VERSION: str = "survival-v2"
 OBSERVATION_VERSION: str = "obs-v1"
 ACTION_VERSION: str = "act-v1"
 
@@ -57,7 +57,7 @@ class EnvironmentConfig:
     def __post_init__(self) -> None:
         if self.environment_version != ENVIRONMENT_VERSION:
             raise ConfigurationError(
-                "environment_version must be 'survival-v1'",
+                "environment_version must be 'survival-v2'",
                 field_path="environment.environment_version",
             )
         if self.world_width != CANONICAL_WORLD_WIDTH:

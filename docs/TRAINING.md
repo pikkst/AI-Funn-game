@@ -12,7 +12,7 @@ Do not infer language, self-awareness, intelligence comparable to humans or civi
 
 | Field | Starting value |
 |---|---|
-| Environment | survival-v1 |
+| Environment | survival-v2 |
 | Algorithm | PPO (Stable-Baselines3) |
 | Network | MlpPolicy, two hidden layers × 128 |
 | Training timesteps | 500,000 total across environments |

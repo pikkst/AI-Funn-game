@@ -1,4 +1,4 @@
-"""Survival-v1 Gymnasium environment adapter.
+"""Survival-v2 Gymnasium environment adapter.
 
 Wraps the deterministic simulation core in the stable Gymnasium contract
 documented in docs/ARCHITECTURE.md and docs/SIMULATION.md:
@@ -31,7 +31,7 @@ from ..simulation import generate_world, step
 from ..simulation.world import WorldState
 from .observation import encode_observation
 
-ENVIRONMENT_VERSION = "survival-v1"
+ENVIRONMENT_VERSION = "survival-v2"
 OBSERVATION_DIM = CANONICAL_OBSERVATION_DIM
 ACTION_COUNT = CANONICAL_ACTION_COUNT
 MAX_EPISODE_STEPS = CANONICAL_MAX_EPISODE_STEPS
@@ -41,7 +41,7 @@ REWARD_DEATH = -1.0
 
 
 class SurvivalEnv(gym.Env[npt.NDArray[np.float32], int]):
-    """Gymnasium adapter for the survival-v1 simulation."""
+    """Gymnasium adapter for the survival-v2 simulation."""
 
     metadata = {"render_modes": []}
 

@@ -1,4 +1,4 @@
-# Survival-v1 world and environment specification
+# Survival-v2 world and environment specification
 
 **Status:** design contract for M1, subject to explicit versioning after implementation.
 
@@ -32,7 +32,7 @@ Initial nominal values and dynamics must be centralized in a versioned `Survival
 
 Energy restoration must never permit indefinite survival without consuming food: persistent metabolic/hunger costs eventually cause death in resource-starved worlds. Explicitly test an always-rest policy.
 
-## Action mapping (frozen for survival-v1)
+## Action mapping (frozen for survival-v2)
 
 | ID | Action | Semantics |
 |---|---|---|

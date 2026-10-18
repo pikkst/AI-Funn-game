@@ -8,6 +8,7 @@ from ai_funn.experiments.config import (
     CANONICAL_MAX_EPISODE_STEPS,
     CANONICAL_WORLD_HEIGHT,
     CANONICAL_WORLD_WIDTH,
+    ENVIRONMENT_VERSION,
     ConfigurationError,
     EnvironmentConfig,
 )
@@ -20,9 +21,9 @@ from .terrain import Terrain, is_passable
 MAX_GENERATION_ATTEMPTS = 100
 
 METABOLISM_COST_PER_STEP = 0.5
-MOVEMENT_EXTRA_COST = 0.5
-HUNGER_INCREMENT_PER_STEP = 0.1
-REST_ENERGY_RECOVERY = 2.0
+MOVEMENT_EXTRA_COST = 0.2
+HUNGER_INCREMENT_PER_STEP = 0.05
+REST_ENERGY_RECOVERY = 1.5
 STARVATION_HEALTH_DECLINE = 1.0
 ENERGY_MAX = 100.0
 HEALTH_MAX = 100.0
@@ -159,7 +160,7 @@ def generate_world(seed: int, environment_config: EnvironmentConfig) -> WorldSta
         raise ConfigurationError("invalid world dimensions", field_path="environment")
     if max_steps != CANONICAL_MAX_EPISODE_STEPS:
         raise ConfigurationError("invalid max steps", field_path="environment")
-    if environment_config.environment_version != "survival-v1":
+    if environment_config.environment_version != ENVIRONMENT_VERSION:
         raise ConfigurationError("invalid environment version", field_path="environment")
 
     rng = WorldRNG(seed)
@@ -196,7 +197,7 @@ def generate_world(seed: int, environment_config: EnvironmentConfig) -> WorldSta
 def init_food_grid_from_terrain(terrain: list[list[int]]) -> list[list[float]]:
     from .resources import init_food_grid
 
-    return init_food_grid(terrain, 1.0)
+    return init_food_grid(terrain, 3.0)
 
 
 def step(state: WorldState, action: int) -> tuple[WorldState, float, bool, bool, dict[str, Any]]:

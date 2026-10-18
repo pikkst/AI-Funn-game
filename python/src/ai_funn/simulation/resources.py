@@ -34,8 +34,8 @@ def regrow_resources(
     food_grid: list[list[float]],
     rng: Any,
     regrow_probability: float = 0.02,
-    regrow_amount: float = 1.0,
-    capacity: float = 1.0,
+    regrow_amount: float = 3.0,
+    capacity: float = 3.0,
 ) -> None:
     height = len(terrain)
     width = len(terrain[0]) if height else 0

@@ -43,7 +43,7 @@ def test_run_evaluation_structure() -> None:
     policy = RandomPolicy(seed=42)
     result = run_evaluation(env, policy, eval_seeds=[1, 2, 3, 4, 5])
     assert isinstance(result, EvaluationResult)
-    assert result.environment_version == "survival-v1"
+    assert result.environment_version == "survival-v2"
     assert result.observation_dim == 199
     assert result.action_count == 6
     assert result.policy_name == "RandomPolicy"
@@ -145,3 +145,71 @@ def test_action_frequencies_sum() -> None:
     total_actions = sum(result.action_frequencies.values())
     assert total_actions == total_steps
     env.close()
+
+
+def test_food_seeking_beats_rest_under_v2() -> None:
+    """EatWhenAvailablePolicy mean survival >= 10% above AlwaysRestPolicy under v2."""
+    seeds: list[int] = list(range(100))
+    policy_seed: int = 1
+    env = SurvivalEnv()
+    try:
+        rest_result: EvaluationResult = run_evaluation(
+            env, AlwaysRestPolicy(seed=policy_seed), seeds, policy_seed=policy_seed
+        )
+        eat_result: EvaluationResult = run_evaluation(
+            env, EatWhenAvailablePolicy(seed=policy_seed), seeds, policy_seed=policy_seed
+        )
+    finally:
+        env.close()
+    assert eat_result.mean_survival_steps > rest_result.mean_survival_steps * 1.10
+
+
+def test_truncation_achievable_under_v2() -> None:
+    """At least one episode reaches truncation under v2."""
+    seeds: list[int] = list(range(100))
+    policy_seed: int = 1
+    env = SurvivalEnv()
+    try:
+        result: EvaluationResult = run_evaluation(
+            env, EatWhenAvailablePolicy(seed=policy_seed), seeds, policy_seed=policy_seed
+        )
+    finally:
+        env.close()
+    n_truncated = int(round(result.truncation_rate * result.num_episodes))
+    assert n_truncated >= 1
+
+
+def test_no_idle_exploit_under_v2() -> None:
+    """AlwaysRestPolicy does not out-survive EatWhenAvailablePolicy under v2."""
+    seeds: list[int] = list(range(100))
+    policy_seed: int = 1
+    env = SurvivalEnv()
+    try:
+        rest_result: EvaluationResult = run_evaluation(
+            env, AlwaysRestPolicy(seed=policy_seed), seeds, policy_seed=policy_seed
+        )
+        eat_result: EvaluationResult = run_evaluation(
+            env, EatWhenAvailablePolicy(seed=policy_seed), seeds, policy_seed=policy_seed
+        )
+    finally:
+        env.close()
+    assert rest_result.mean_survival_steps <= eat_result.mean_survival_steps
+
+
+def test_baseline_replay_determinism_under_v2() -> None:
+    """Same seeds and policy_seed yield identical mean_survival_steps across runs."""
+    seeds: list[int] = list(range(100))
+    policy_seed: int = 1
+    env1 = SurvivalEnv()
+    env2 = SurvivalEnv()
+    try:
+        run_a: EvaluationResult = run_evaluation(
+            env1, EatWhenAvailablePolicy(seed=policy_seed), seeds, policy_seed=policy_seed
+        )
+        run_b: EvaluationResult = run_evaluation(
+            env2, EatWhenAvailablePolicy(seed=policy_seed), seeds, policy_seed=policy_seed
+        )
+    finally:
+        env1.close()
+        env2.close()
+    assert run_a.mean_survival_steps == run_b.mean_survival_steps
