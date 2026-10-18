@@ -1,0 +1,30 @@
+﻿experiment_id: survival-001
+description: "Baseline PPO training on survival-v2"
+environment:
+  environment_version: survival-v2
+  world_width: 32
+  world_height: 32
+  max_episode_steps: 512
+observation:
+  observation_version: obs-v1
+  observation_dim: 199
+action:
+  action_version: act-v1
+  action_count: 6
+seeds:
+  train_seeds: [101, 102, 103]
+  validation_seeds: [201, 202]
+  test_seeds: [301, 302, 303]
+training:
+  algorithm: PPO
+  policy: MlpPolicy
+  total_timesteps: 500000
+  n_envs: 8
+  learning_rate: 0.0003
+  hidden_layers: [128, 128]
+  device: cpu
+  seed: 0
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99
