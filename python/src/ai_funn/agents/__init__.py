@@ -1,6 +1,17 @@
-"""Agent policies for AI-Funn-game.
+"""Agent policies for AI-Funn-game."""
 
-This subpackage will host the neural policy definitions and scripted
-baselines used during training and evaluation.  Currently a stub;
-full implementation pending.
-"""
+from .baselines import (
+    AlwaysRestPolicy,
+    BasePolicy,
+    EatWhenAvailablePolicy,
+    RandomPolicy,
+    SimpleWalkerPolicy,
+)
+
+__all__ = [
+    "AlwaysRestPolicy",
+    "BasePolicy",
+    "EatWhenAvailablePolicy",
+    "RandomPolicy",
+    "SimpleWalkerPolicy",
+]

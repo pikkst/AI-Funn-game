@@ -1,6 +1,17 @@
-"""Training harness for AI-Funn-game.
+"""Training harness for AI-Funn-game."""
 
-This subpackage will host the RL training loop, checkpointing and
-hyperparameter management.  Currently a stub; full implementation
-pending.
-"""
+from .evaluation import (
+    EpisodeResult,
+    EvaluationResult,
+    run_episode,
+    run_evaluation,
+    save_results,
+)
+
+__all__ = [
+    "EpisodeResult",
+    "EvaluationResult",
+    "run_episode",
+    "run_evaluation",
+    "save_results",
+]
