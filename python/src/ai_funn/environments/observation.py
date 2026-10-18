@@ -1,4 +1,4 @@
-"""Observation encoder for survival-v1 environment.
+"""Observation encoder for survival-v2 environment.
 
 Converts a WorldState into the fixed float32[199] observation vector
 documented in docs/SIMULATION.md: four 7x7 spatial channels laid out
@@ -21,6 +21,7 @@ from ..simulation.world import WorldState
 ENERGY_MAX = 100.0
 HEALTH_MAX = 100.0
 HUNGER_MAX = 1.0
+FOOD_CAPACITY = 3.0
 WINDOW_RADIUS = 3
 WINDOW_SIZE = 2 * WINDOW_RADIUS + 1  # 7
 CHANNELS = 4
@@ -62,7 +63,7 @@ def encode_observation(state: WorldState) -> npt.NDArray[np.float32]:
                     passability[row, col] = 1.0
                 else:
                     passability[row, col] = 0.0
-                food_channel[row, col] = float(food[wy][wx])
+                food_channel[row, col] = _normalize(float(food[wy][wx]), FOOD_CAPACITY)
                 vegetation[row, col] = 1.0 if tile == int(Terrain.FOREST) else 0.0
             else:
                 visibility[row, col] = 0.0
